@@ -68,4 +68,4 @@ if __name__ == "__main__":
     test_weather_prediction()
 
     print("\nTesting Pest Detection...")
-    test_pest_detection("E:\KrishiMitra\Scripts\Test_Image.jpg")
+    test_pest_detection("E:\KrishiMitra\Scripts\Test_snail.jpg")

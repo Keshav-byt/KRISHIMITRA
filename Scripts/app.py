@@ -335,7 +335,6 @@ def pest_detection():
             logger.warning(f"Could not get class names: {e}")
 
         result = {
-            "predicted_class": int(predicted_class),
             "confidence": confidence
         }
         
