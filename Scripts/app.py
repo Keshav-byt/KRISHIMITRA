@@ -205,18 +205,57 @@ def soil_analysis():
         prediction = MODELS['soil'].predict(scaled_features)
         
         # Convert prediction to interpretable result
-        fertility_status = "High" if prediction[0][0] > 0.5 else "Low"
-        confidence = float(prediction[0][0] * 100)
+        prediction_value = float(prediction[0][0])
+        fertility_status = "High" if prediction_value > 0.5 else "Low"
+        
+        # Calculate confidence - transform sigmoid output to more intuitive confidence value
+        # Shift the value away from 0.5 to get a better confidence measure
+        confidence = abs(prediction_value - 0.5) * 200  # This will scale to 0-100%
+        
+        # Get feature importance (approximate using the model weights)
+        # This is a simplified approach, more accurate methods exist
+        feature_importances = {}
+        if len(MODELS['soil'].layers) > 0:
+            weights = MODELS['soil'].layers[0].get_weights()[0]
+            importance = np.abs(weights).mean(axis=1)
+            # Normalize importances
+            importance = importance / np.sum(importance) * 100
+            for i, feature in enumerate(feature_names):
+                feature_importances[feature] = float(importance[i])
 
         return jsonify({
             "fertility_status": fertility_status,
-            "confidence": confidence
+            "confidence": confidence,
+            "recommendation": get_soil_recommendation(data, fertility_status)
         }), 200
 
     except Exception as e:
         logger.error(f"Soil analysis error: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": "Internal server error during soil analysis"}), 500
+
+def get_soil_recommendation(soil_data, fertility_status):
+    """Generate soil fertility recommendations based on soil data"""
+    recommendations = []
+    
+    if soil_data["N"] < 200:
+        recommendations.append("Nitrogen levels are low. Consider adding nitrogen-rich fertilizers.")
+    
+    if soil_data["P"] < 40:
+        recommendations.append("Phosphorus levels are low. Consider adding phosphate fertilizers.")
+    
+    if soil_data["K"] < 250:
+        recommendations.append("Potassium levels are low. Consider adding potash fertilizers.")
+    
+    if soil_data["pH"] < 6.0:
+        recommendations.append("Soil is acidic. Consider adding agricultural lime to raise pH.")
+    elif soil_data["pH"] > 7.5:
+        recommendations.append("Soil is alkaline. Consider adding organic matter to lower pH.")
+    
+    if fertility_status == "Low" and not recommendations:
+        recommendations.append("Consider adding organic compost to improve overall soil fertility.")
+        
+    return recommendations
 
 @app.route("/weather-prediction", methods=["POST"])
 def weather_prediction():
