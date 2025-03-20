@@ -81,8 +81,7 @@ def test_pest_detection(image_paths):
             if not os.path.exists(img_path):
                 print(f"Error: Image file not found at {img_path}")
                 continue
-                
-            print(f"\nTesting pest detection with image: {Path(img_path).name}")
+            
             with open(img_path, "rb") as img_file:
                 files = {"image": img_file}
                 pest_response = requests.post(f"{BASE_URL}/pest-detection", files=files)
@@ -110,7 +109,6 @@ if __name__ == "__main__":
     test_weather_prediction()
 
     print("\nTesting Pest Detection...")
-    # You can add multiple test images
     test_pest_detection([
         "E:/KrishiMitra/Scripts/Test_snail.jpg",
         # Add more test images if available
