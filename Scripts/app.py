@@ -192,7 +192,8 @@ def soil_analysis():
         
         # Validate input features
         if not all(feature in data for feature in feature_names):
-            return jsonify({"error": "Missing required soil features"}), 400
+            missing = [f for f in feature_names if f not in data]
+            return jsonify({"error": f"Missing required soil features: {', '.join(missing)}"}), 400
 
         # Prepare features
         features = [data[feature] for feature in feature_names]
@@ -209,48 +210,58 @@ def soil_analysis():
         fertility_status = "High" if prediction_value > 0.5 else "Low"
         
         # Calculate confidence - transform sigmoid output to more intuitive confidence value
-        # Shift the value away from 0.5 to get a better confidence measure
-        confidence = abs(prediction_value - 0.5) * 200  # This will scale to 0-100%
+        confidence = abs(prediction_value - 0.5) * 200  # Scale to 0-100%
         
-        # Get feature importance (approximate using the model weights)
-        # This is a simplified approach, more accurate methods exist
-        feature_importances = {}
-        if len(MODELS['soil'].layers) > 0:
-            weights = MODELS['soil'].layers[0].get_weights()[0]
-            importance = np.abs(weights).mean(axis=1)
-            # Normalize importances
-            importance = importance / np.sum(importance) * 100
-            for i, feature in enumerate(feature_names):
-                feature_importances[feature] = float(importance[i])
-
+        # Get recommendations based on actual soil values
+        recommendations = get_soil_recommendation(data, fertility_status)
+        
+        # Return more detailed response
         return jsonify({
             "fertility_status": fertility_status,
             "confidence": confidence,
-            "recommendation": get_soil_recommendation(data, fertility_status)
+            "recommendation": recommendations,
         }), 200
 
     except Exception as e:
         logger.error(f"Soil analysis error: {e}")
         logger.error(traceback.format_exc())
-        return jsonify({"error": "Internal server error during soil analysis"}), 500
+        return jsonify({"error": f"Internal server error during soil analysis: {str(e)}"}), 500
 
 def get_soil_recommendation(soil_data, fertility_status):
     """Generate soil fertility recommendations based on soil data"""
     recommendations = []
     
-    if soil_data["N"] < 200:
-        recommendations.append("Nitrogen levels are low. Consider adding nitrogen-rich fertilizers.")
+    # More detailed recommendations based on NPK values
+    if soil_data["N"] < 140:
+        recommendations.append("Nitrogen levels are very low. Apply nitrogen-rich fertilizers like urea or ammonium sulfate.")
+    elif soil_data["N"] < 200:
+        recommendations.append("Nitrogen levels are moderately low. Consider adding nitrogen-rich organic matter or balanced NPK fertilizer.")
     
-    if soil_data["P"] < 40:
-        recommendations.append("Phosphorus levels are low. Consider adding phosphate fertilizers.")
+    if soil_data["P"] < 25:
+        recommendations.append("Phosphorus levels are very low. Apply phosphate fertilizers like superphosphate or rock phosphate.")
+    elif soil_data["P"] < 40:
+        recommendations.append("Phosphorus levels are moderately low. Consider adding bone meal or balanced fertilizer with higher P content.")
     
-    if soil_data["K"] < 250:
-        recommendations.append("Potassium levels are low. Consider adding potash fertilizers.")
+    if soil_data["K"] < 180:
+        recommendations.append("Potassium levels are very low. Apply potash fertilizers like muriate of potash or sulfate of potash.")
+    elif soil_data["K"] < 250:
+        recommendations.append("Potassium levels are moderately low. Consider adding wood ash or balanced fertilizer with higher K content.")
     
-    if soil_data["pH"] < 6.0:
-        recommendations.append("Soil is acidic. Consider adding agricultural lime to raise pH.")
+    # pH recommendations
+    if soil_data["pH"] < 5.5:
+        recommendations.append("Soil is strongly acidic. Add agricultural lime to raise pH and improve nutrient availability.")
+    elif soil_data["pH"] < 6.0:
+        recommendations.append("Soil is moderately acidic. Consider adding dolomitic lime to gradually raise pH.")
+    elif soil_data["pH"] > 8.0:
+        recommendations.append("Soil is strongly alkaline. Add organic matter or gypsum to gradually lower pH.")
     elif soil_data["pH"] > 7.5:
-        recommendations.append("Soil is alkaline. Consider adding organic matter to lower pH.")
+        recommendations.append("Soil is moderately alkaline. Incorporate more organic matter to improve soil structure and lower pH.")
+    
+    # Organic carbon recommendations
+    if soil_data["OC"] < 0.4:
+        recommendations.append("Organic carbon is very low. Add compost, manure or practice crop rotation with cover crops.")
+    elif soil_data["OC"] < 0.75:
+        recommendations.append("Organic carbon is low. Incorporate more organic matter and reduce tillage if possible.")
     
     if fertility_status == "Low" and not recommendations:
         recommendations.append("Consider adding organic compost to improve overall soil fertility.")
@@ -282,25 +293,35 @@ def weather_prediction():
                 "error": f"Invalid input size. Expected a JSON array with exactly 3 values, but got {len(data)} values."
             }), 400
 
-        # Convert to numpy array and reshape to (1, 1, 3)
-        input_array = np.array(data).reshape(1, 1, 3)
-
-        # Normalize input using the scaler (Ensure correct input format)
-        scaled_features = SCALERS['weather'].transform(input_array.reshape(-1, 3))
+        # Convert to numpy array and reshape for the model input
+        features = np.array([data])
+        scaled_features = SCALERS['weather'].transform(features)
+        
+        # Reshape for LSTM input (assuming time_step=1 based on your code)
         scaled_features = scaled_features.reshape(1, 1, 3)
-
+        
         # Make prediction
-        prediction = MODELS['weather'].predict(scaled_features)
+        scaled_prediction = MODELS['weather'].predict(scaled_features)
+        
+        # Inverse transform prediction to the original scale
+        # We need to reconstruct the original feature structure with the prediction as temperature
+        # and zeros for the other features that were not predicted
+        temp_pred = scaled_prediction[0][0]
+        dummy_features = np.zeros((1, 3))
+        dummy_features[0, 0] = temp_pred  # Set the first column (temperature) to our prediction
+        
+        # Inverse transform to get the actual temperature
+        original_scale_prediction = SCALERS['weather'].inverse_transform(dummy_features)[0, 0]
 
         # Return the predicted temperature
         return jsonify({
-            "predicted_temperature": abs(float(prediction[0][0]))*100
+            "predicted_temperature": float(original_scale_prediction)
         }), 200
 
     except Exception as e:
         logger.error(f"Weather prediction error: {e}")
         logger.error(traceback.format_exc())
-        return jsonify({"error": "Internal server error during weather prediction"}), 500
+        return jsonify({"error": f"Internal server error during weather prediction: {str(e)}"}), 500
     
 @app.route("/pest-detection", methods=["POST"])
 def pest_detection():
