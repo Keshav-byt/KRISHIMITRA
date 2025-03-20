@@ -1,0 +1,4 @@
+.vscode/
+.idea/
+venv/
+Models/Pest_detection/pest_detection_model.h5
