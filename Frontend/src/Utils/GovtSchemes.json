@@ -1,0 +1,92 @@
+[
+  {
+    "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "description": "Provides all landholding farmers with annual income support of ₹6,000, disbursed in three equal installments.",
+    "image_link": "https://images.bhaskarassets.com/web2images/521/2024/12/28/orig_1763725-pm-kisan-samman-nidhi-yojana1696066951_1735329821.png",
+    "official_website": "https://pmkisan.gov.in/"
+  },
+  {
+    "scheme_name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "description": "Offers crop insurance to protect farmers against losses due to natural calamities, pests, and diseases.",
+    "image_link": "https://www.mygov.in/sites/all/themes/mygov/images/pmfby/brochure-1.jpg",
+    "official_website": "https://pmfby.gov.in/"
+  },
+  {
+    "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (PMKSY)",
+    "description": "Aims to improve irrigation efficiency and expand cultivable areas under assured irrigation.",
+    "image_link": "https://acko-cms.s3.ap-south-1.amazonaws.com/large_Pradhan_Mantri_Krishi_Sinchayee_Yojana_PMKSY_cf55201a2b.png",
+    "official_website": "https://pmksy.gov.in/"
+  },
+  {
+    "scheme_name": "Soil Health Card Scheme",
+    "description": "Provides farmers with soil health cards detailing nutrient status and recommendations for appropriate dosage of fertilizers.",
+    "image_link": "https://i0.wp.com/iasnext.com/wp-content/uploads/2024/02/Soil-Health-Cards.webp?fit=1200%2C675&ssl=1",
+    "official_website": "https://soilhealth.dac.gov.in/"
+  },
+  {
+    "scheme_name": "e-National Agriculture Market (e-NAM)",
+    "description": "Creates a unified online market platform to facilitate better price discovery and marketing of agricultural produce.",
+    "image_link": "https://iasgyan.in/ig-uploads/images/NATIONAL_AGRICULTURE_MARKET_(E-NAM)_PORTAL.jpg",
+    "official_website": "https://enam.gov.in/"
+  },
+  {
+    "scheme_name": "Kisan Credit Card (KCC) Scheme",
+    "description": "Offers farmers timely access to credit for their cultivation and other needs.",
+    "image_link": "https://etimg.etb2bimg.com/photo/104568073.cms",
+    "official_website": "https://www.pmkisan.gov.in/KisanCreditCard.aspx"
+  },
+  {
+    "scheme_name": "National Livestock Mission (NLM)",
+    "description": "Focuses on sustainable development of the livestock sector, including breed improvement and capacity building.",
+    "image_link": "https://i0.wp.com/gokulamseekias.com/wp-content/uploads/2024/02/photo_2024-02-23_16-34-14-2.jpg",
+    "official_website": "https://dahd.nic.in/schemes-programmes/national-livestock-mission"
+  },
+  {
+    "scheme_name": "Rashtriya Krishi Vikas Yojana (RKVY)",
+    "description": "Encourages states to invest in agriculture and allied sectors for holistic development.",
+    "image_link": "https://sribhumi.assam.gov.in/sites/default/files/styles/scheme_cover_image_for_details_page_710x402_/public/public_utility/image1.jpg",
+    "official_website": "https://rkvy.nic.in/"
+  },
+  {
+    "scheme_name": "Agri-Clinics and Agri-Business Centres (ACABC) Scheme",
+    "description": "Provides training and financial support to agricultural graduates to establish agri-ventures, offering professional extension services to farmers.",
+    "image_link": "https://cdn.slidesharecdn.com/ss_thumbnails/acabcworkshoppptforreferenceindicative-240323011631-e809131a-thumbnail.jpg?width=560&fit=bounds",
+    "official_website": "https://www.agriclinics.net/"
+  },
+  {
+    "scheme_name": "Pradhan Mantri Kisan Maan Dhan Yojana",
+    "description": "A pension scheme ensuring a minimum fixed pension of ₹3,000 per month for small and marginal farmers upon reaching 60 years of age.",
+    "image_link": "https://vakilsearch.com/blog/wp-content/uploads/2023/02/Pradhan-Mantri-Kisan-Maandhan-Yojana.webp",
+    "official_website": "https://pmkmy.gov.in/"
+  },
+  {
+    "scheme_name": "Paramparagat Krishi Vikas Yojana (PKVY)",
+    "description": "Promotes organic farming practices among farmers.",
+    "image_link": "https://i0.wp.com/iasnext.com/wp-content/uploads/2024/02/Paramparagat-Krishi-Vikas.webp",
+    "official_website": "https://pgsindia-ncof.gov.in/pkvy/index.aspx"
+  },
+  {
+    "scheme_name": "National Mission on Oilseeds and Oil Palm (NMOOP)",
+    "description": "Aims to increase the production of oilseeds and expand the area under oil palm cultivation.",
+    "image_link": "https://www.godigit.com/content/dam/godigit/directportal/en/contenthm/national-mission-on-oilseeds-and-oil-palm.jpg  ",
+    "official_website": "https://nmoop.gov.in/"
+  },
+  {
+    "scheme_name": "National Food Security Mission (NFSM)",
+    "description": "Targets increased production of rice, wheat, pulses, coarse cereals, and commercial crops.",
+    "image_link": "https://charaideo.assam.gov.in/sites/default/files/styles/scheme_cover_image_for_details_page_710x402_/public/2022-06/download.jpg",
+    "official_website": "https://nfsm.gov.in/"
+  },
+  {
+    "scheme_name": "Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan (PM-KUSUM)",
+    "description": "Encourages the use of solar energy in agriculture by providing subsidies for solar pumps and grid-connected solar power plants.",
+    "image_link": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkorCAeb4e-AUIJq49zYeUZNiNwWcaP33Mxw&s",
+    "official_website": "https://mnre.gov.in/pm-kusum/"
+  },
+  {
+    "scheme_name": "Agriculture Infrastructure Fund (AIF)",
+    "description": "Provides medium to long-term debt financing facilities for investment in viable projects for post-harvest management infrastructure and community farming assets.",
+    "image_link": "https://pbs.twimg.com/profile_images/1691019332883554304/WTSCzyqh_400x400.jpg",
+    "official_website": "https://agriinfra.dac.gov.in/"
+  }
+]
