@@ -7,24 +7,12 @@ import sys
 # Flask base URL
 BASE_URL = "http://127.0.0.1:5000"
 
-def test_server_health():
-    """Test if the server is running and healthy"""
-    try:
-        response = requests.get(f"{BASE_URL}/")
-        response.raise_for_status()
-        print("Server Health Check:")
-        print(json.dumps(response.json(), indent=2))
-        return response.status_code == 200
-    except requests.exceptions.RequestException as e:
-        print(f"Error connecting to server: {e}")
-        return False
-
 def test_soil_fertility_classification():
     """Test the soil fertility analysis endpoint"""
     # Define different soil samples to test
     soil_samples = [
         {
-            "name": "Good fertile soil",
+            "name": "Good soil sample",
             "data": {
                 "N": 280, "P": 80, "K": 350, "pH": 6.8,
                 "EC": 1.5, "OC": 1.2, "S": 20, "Zn": 1.5,
@@ -54,17 +42,17 @@ def test_soil_fertility_classification():
             print("Error decoding JSON response for soil classification.")
 
 def test_weather_prediction():
-    """Test the weather prediction endpoint with various inputs"""
+    """Test the weather prediction endpoint
+    with different weather conditions"""
     # Test cases: [Temperature, Humidity, WindSpeed]
     weather_test_cases = [
-        {"name": "Hot summer day", "data": [32.0, 0.45, 15.0]},
-        {"name": "Mild spring day", "data": [25.0, 0.6, 10.0]},
-        {"name": "Cold winter day", "data": [5.0, 0.8, .0]}
+        {"data": [32.0, 0.45, 15.0]},
+        {"data": [25.0, 0.6, 10.0]},
+        {"data": [5.0, 0.8, .0]}
     ]
     
     for case in weather_test_cases:
         try:
-            print(f"\nTesting weather case: {case['name']}")
             weather_response = requests.post(f"{BASE_URL}/weather-prediction", json=case['data'])
             weather_response.raise_for_status()
             print("Weather Prediction Response:")
@@ -97,11 +85,7 @@ def test_pest_detection(image_paths):
 
 # Main execution
 if __name__ == "__main__":
-    # Check if server is running first
-    if not test_server_health():
-        print("Server is not running or not responding. Please start the server first.")
-        sys.exit(1)
-    
+        
     print("\nTesting Soil Fertility Classification...")
     test_soil_fertility_classification()
 
