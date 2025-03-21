@@ -275,7 +275,7 @@ def weather_prediction():
         # Validate model is loaded
         if 'weather' not in MODELS or 'weather' not in SCALERS:
             return jsonify({
-                "error": "Weather prediction model or scaler not loaded. Please ensure the weather model and scaler files are available."
+                "error": "Weather prediction model not loaded"
             }), 500
 
         # Extract features from request
