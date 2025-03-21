@@ -110,6 +110,6 @@ if __name__ == "__main__":
 
     print("\nTesting Pest Detection...")
     test_pest_detection([
-        "E:/KrishiMitra/Scripts/Test_snail.jpg",
+        "E:/KrishiMitra/Scripts/Test_images/Test_snail.jpg",
         # Add more test images if available
     ])
