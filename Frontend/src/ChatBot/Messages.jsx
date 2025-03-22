@@ -3,7 +3,7 @@ const Messages = ({chat}) => {
     return (
         <>
             {chat.role !== "user" ? (<div className="flex justify-start">
-                <div className="bg-green-300 text-black p-2 rounded-lg rounded-bl-none max-w-[80%]">
+                <div className="bg-gradient-to-r from-violet-600 to-indigo-600  p-2 rounded-lg rounded-bl-none max-w-[80%]">
                     {chat.text}
 
                 </div>

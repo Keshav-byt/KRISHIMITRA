@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import Messages from "./Messages.jsx";
 
 const Chat = ({handleChatDisplay}) => {
-    const [chatHistory, setChatHistory] = useState([]);
+    const [chatHistory, setChatHistory] = useState([{role: "model" , text: "Hi! How can i help?"}]);
     const chatBodyRef = useRef();
 
     const generateBotReplies = async (history) => {
@@ -47,7 +47,7 @@ const Chat = ({handleChatDisplay}) => {
     return (
         <div className="w-[22em] h-[32em] flex flex-col bg-white shadow-lg rounded-lg border ">
 
-            <div className="h-[3em] bg-green-500 text-white flex justify-between items-center px-4 font-semibold rounded-t-lg">
+            <div className="h-[3em] text-black shadow-[0px_50px_100px_50px_rgba(0,_0,_0,_0.1)] flex justify-between items-center px-4 font-semibold rounded-t-lg">
                 AI ChatBot
                 <img src="https://www.svgrepo.com/show/506172/cross.svg"
                      className="w-5 h-5 cursor-pointer"
@@ -56,7 +56,7 @@ const Chat = ({handleChatDisplay}) => {
             </div>
 
             {/* Chat Body */}
-            <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-100" >
+            <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-200" >
 
                 {chatHistory.map((chat,index) => (
                     <Messages chat={chat} key={index} />
