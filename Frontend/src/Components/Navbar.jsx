@@ -22,7 +22,7 @@ const Navbar=()=>{
                 <div className="group ">
                     <h1 onClick={() => navigate('/weather')}
                         className={'text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out group-hover:text-green-500 shadow'}>
-                        Weather Prediction
+                        Irrigation Advice
                     </h1>
                 </div>
                 <div className="group ">
