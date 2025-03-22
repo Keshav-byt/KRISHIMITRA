@@ -83,19 +83,18 @@ def test_pest_detection(image_paths):
         except Exception as e:
             print(f"Unexpected error during pest detection: {e}")
 
-def test_irrigation(soil_color, crop_type, city):
+def test_irrigation(soil_color, city):
     data = {
         "soil_color": soil_color,
-        "crop_type": crop_type,
         "city": city
     }
-    # Changed from predict_irrigation to predict-irrigation to match the Flask endpoint
-    response = requests.post(f"{BASE_URL}/predict-irrigation", json=data)
+    response = requests.post(f"{BASE_URL}/predict-crop", json=data)
     
     if response.status_code == 200:
-        print("Irrigation Recommendation Response:", response.json())
+        print("Crop Recommendation Response:")
+        print(json.dumps(response.json(), indent=2))
     else:
-        print("Error:", response.status_code, response.text)
+        print(f"Error: {response.status_code} - {response.text}")
 
 # Main execution
 if __name__ == "__main__":
@@ -110,4 +109,4 @@ if __name__ == "__main__":
     test_pest_detection(["E:/KrishiMitra/Scripts/Test_images/Test_snail.jpg"])
         
     print("\nTesting Irrigation Recommendation...")
-    test_irrigation("Wheat", "Wheat", "Pune")
+    test_irrigation("Brown","Pune")

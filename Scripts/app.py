@@ -49,9 +49,10 @@ PATHS = {
     'weather_model': os.path.join(project_root, "Models", "Weather_Forecast", "weather_model.h5"),
     'weather_scaler': os.path.join(project_root, "Models", "Weather_Forecast", "scaler.pkl"),
     'pest_model': os.path.join(project_root, "Models", "Pest_Detection", "pest_detection_model.h5"),
-    'irrigation_model': os.path.join(project_root, "Models", "Irrigation_Advice", "irrigation_model.pkl"),
+    'irrigation_model': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_recommend.pkl"),
     'irrigation_scaler': os.path.join(project_root, "Models", "Irrigation_Advice", "scaler.pkl"),
-    'crop_type_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "Crop_type.pkl"),
+    'crop_type_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_encoder.pkl"),
+    'soil_colour_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "soil_color_encoder.pkl"),
     'preprocess_soil': os.path.join(scripts_dir, "preprocess_soil.py"),
     'preprocess_irrigation': os.path.join(scripts_dir, "preprocess_irrigation.py"),
     'train_soil': os.path.join(project_root, "Models", "Soil_Analysis", "train_soil_model.py"),
@@ -199,6 +200,13 @@ def load_models_and_scalers():
         else:
             logger.error(f"Crop type encoder not found at {PATHS['crop_type_enc']}")
 
+        # Load Soil Color Encoder
+        if os.path.exists(PATHS['soil_colour_enc']):
+            models['soil_colour_enc'] = joblib.load(PATHS['soil_colour_enc'])
+            logger.info("Soil color encoder loaded successfully")
+        else:
+            logger.error(f"Soil color encoder not found at {PATHS['soil_colour_enc']}")
+
     except Exception as e:
         logger.error(f"Error loading models/scalers: {e}")
         logger.error(traceback.format_exc())
@@ -207,19 +215,6 @@ def load_models_and_scalers():
 
 # Load models and scalers at startup
 MODELS, SCALERS = load_models_and_scalers()
-
-@app.route("/", methods=["GET"])
-def index():
-    """Health check endpoint"""
-    return jsonify({
-        "status": "online",
-        "models_loaded": {
-            "soil_analysis": "soil" in MODELS,
-            "weather_prediction": "weather" in MODELS,
-            "pest_detection": PEST_MODEL is not None,
-            "irrigation_advice": "irrigation" in MODELS and LABEL_ENC is not None
-        }
-    }), 200
 
 @app.route("/soil-analysis", methods=["POST"])
 def soil_analysis():
@@ -441,13 +436,13 @@ def pest_detection():
         logger.error(traceback.format_exc())
         return jsonify({"error": f"Internal server error during pest detection: {str(e)}"}), 500
     
-@app.route("/predict-irrigation", methods=["POST"])
-def predict_irrigation():
-    """Irrigation advice endpoint"""
+@app.route("/predict-crop", methods=["POST"])
+def predict_crop():
+    """Crop recommendation endpoint"""
     try:
         # Check if required models and encoders are loaded
         if 'irrigation' not in MODELS or 'irrigation' not in SCALERS or LABEL_ENC is None:
-            return jsonify({"error": "Irrigation prediction model not loaded"}), 500
+            return jsonify({"error": "Crop prediction model not loaded"}), 500
             
         # Get request data
         data = request.get_json()
@@ -455,19 +450,28 @@ def predict_irrigation():
             return jsonify({"error": "No data provided"}), 400
             
         # Validate required fields
-        required_fields = ["soil_color", "crop_type", "city"]
+        required_fields = ["soil_color", "city"]
         missing = [f for f in required_fields if f not in data]
         if missing:
             return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
         
         soil_color = data.get("soil_color")
-        crop_type = data.get("crop_type")
         city = data.get("city")
         
         # Validate soil_color is in known classes
-        if soil_color not in LABEL_ENC.classes_:
-            return jsonify({"error": f"Invalid soil_color. Supported values: {list(LABEL_ENC.classes_)}"}), 400
+        if 'soil_colour_enc' not in MODELS:
+            return jsonify({"error": "Soil color encoder not loaded"}), 500
             
+        soil_color_encoder = MODELS['soil_colour_enc']
+        
+        # Check if the soil color is valid
+        try:
+            if not hasattr(soil_color_encoder, 'classes_') or soil_color not in soil_color_encoder.classes_:
+                return jsonify({"error": f"Invalid soil_color. Supported values: {list(soil_color_encoder.classes_) if hasattr(soil_color_encoder, 'classes_') else 'unknown'}"}), 400
+        except Exception as e:
+            logger.error(f"Error validating soil color: {e}")
+            return jsonify({"error": f"Error validating soil color: {str(e)}"}), 500
+                
         # Get weather data
         temperature, humidity = get_weather(city)
         if temperature is None or humidity is None:
@@ -475,34 +479,73 @@ def predict_irrigation():
         
         try:
             # Encode categorical features
-            soil_color_encoded = LABEL_ENC.transform([soil_color])[0]
+            soil_color_encoded = soil_color_encoder.transform([soil_color])[0]
             
-            # Add default pH and soil moisture since model expects 5 features
-            ph_value = 7.0  # Default neutral pH
-            soil_moisture = 50.0  # Default moderate soil moisture
-            
-            # The model expects 5 features
-            input_data = np.array([[soil_color_encoded, ph_value, soil_moisture, temperature, humidity]])
+            # The model expects 3 features: soil color, temperature, humidity
+            input_data = np.array([[soil_color_encoded, temperature, humidity]])
             input_scaled = SCALERS['irrigation'].transform(input_data)
         except Exception as e:
+            logger.error(f"Error processing input data: {e}")
             return jsonify({"error": f"Error processing input data: {str(e)}"}), 400
         
-        # Predict irrigation method
+        # Predict crop type
         prediction = MODELS['irrigation'].predict(input_scaled)
-        irrigation_method = prediction[0]  # Assuming output is already a label, not an encoded value
+        crop_type = LABEL_ENC.inverse_transform(prediction)[0]
+        
+        # Get crop suitability score (using prediction probabilities)
+        probabilities = MODELS['irrigation'].predict_proba(input_scaled)[0]
+        max_probability = float(np.max(probabilities) * 100)
+        
+        # Add recommendations based on predicted crop
+        recommendations = get_crop_recommendations(crop_type, temperature, humidity)
         
         return jsonify({
             "city": city,
-            "crop_type": crop_type,
             "temperature": temperature,
             "humidity": humidity,
-            "irrigation_method": irrigation_method
+            "recommended_crop": crop_type
         }), 200
     
     except Exception as e:
-        logger.error(f"Irrigation prediction error: {e}")
+        logger.error(f"Crop prediction error: {e}")
         logger.error(traceback.format_exc())
-        return jsonify({"error": f"Internal server error during irrigation prediction: {str(e)}"}), 500
+        return jsonify({"error": f"Internal server error during crop prediction: {str(e)}"}), 500
+
+def get_crop_recommendations(crop_type, temperature, humidity):
+    """Generate crop-specific recommendations based on weather conditions"""
+    recommendations = []
+    
+    # General temperature recommendations
+    if temperature < 15:
+        recommendations.append(f"Current temperature ({temperature}°C) is low for {crop_type}. Consider providing additional protection.")
+    elif temperature > 35:
+        recommendations.append(f"Current temperature ({temperature}°C) is high for {crop_type}. Ensure adequate irrigation.")
+    
+    # General humidity recommendations
+    if humidity < 30:
+        recommendations.append(f"Current humidity ({humidity}%) is low. Consider increasing irrigation frequency.")
+    elif humidity > 80:
+        recommendations.append(f"Current humidity ({humidity}%) is high. Watch for fungal diseases.")
+    
+    # Crop-specific recommendations
+    if crop_type.lower() == "barley":
+        recommendations.append("Barley grows best in well-drained soil with moderate moisture.")
+        if temperature > 30:
+            recommendations.append("Barley is sensitive to high temperatures. Consider shade or increased irrigation.")
+    elif crop_type.lower() == "wheat":
+        recommendations.append("Wheat requires full sun and moderate water supply.")
+        if humidity > 70:
+            recommendations.append("High humidity may increase risk of wheat diseases. Consider fungicide application.")
+    elif crop_type.lower() == "rice":
+        recommendations.append("Rice requires flooding or consistent moisture.")
+        if temperature < 20:
+            recommendations.append("Low temperatures may delay rice growth. Consider delayed planting.")
+    
+    # If no specific recommendations are given
+    if not recommendations:
+        recommendations.append(f"Monitor water needs for {crop_type} based on local conditions.")
+    
+    return recommendations
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)

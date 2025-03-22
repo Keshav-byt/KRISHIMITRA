@@ -8,7 +8,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../s
 
 from preprocess_irrigation import preprocess_data #type: ignore
 
-
 def train_model(data_file):
     # Load preprocessed data
     X_train, X_test, y_train, y_test = preprocess_data(data_file)
@@ -25,7 +24,7 @@ def train_model(data_file):
     print(f"Model Accuracy: {accuracy * 100:.2f}%")
     
     # Save trained model
-    joblib.dump(model, 'models/irrigation_advice/irrigation_model.pkl')
+    joblib.dump(model, 'models/irrigation_advice/crop_recommend.pkl')
     
     return model
 
