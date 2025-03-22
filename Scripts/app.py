@@ -95,7 +95,7 @@ def load_models_and_scalers():
     for path in PATHS.values():
         ensure_directory_exists(path)
 
-    # Run preprocessing and training if necessary
+    # Run models again, if necessary
     # Soil preprocessing
     if (not os.path.exists(PATHS['soil_scaler']) or 
         not os.path.exists(os.path.join(project_root, "data", "soil", "X_train_scaled.csv"))):
