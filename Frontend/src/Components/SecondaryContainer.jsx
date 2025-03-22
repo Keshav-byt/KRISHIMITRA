@@ -21,15 +21,15 @@ const SecondaryContainer=()=>{
                 </div>
                 <div
                     className=" flex flex-col items-center justify-between p-6 h-96 w-[45%] bg-gradient-to-br from-lime-700/10 via-lime-600/10 to-lime-500/10 backdrop-blur border border-green-600 rounded-xl">
-                    <h1 className={'text-2xl font-bold'}>Weather Prediction</h1>
+                    <h1 className={'text-2xl font-bold'}>Irrigation Advice</h1>
                     <img className={'h-[65%] '}
                          src=
-                             "https://i.ibb.co/rGcd01xz/weather-forecast-icon-clouds-and-sunshine-vector-removebg-preview.png"
+                             "https://cdn0.iconfinder.com/data/icons/irrigation-system-5/500/anm211_18_smart_irrigation-512.png"
                          alt="soil analysis illustration"
                     />
                     <button
                         onClick={() => navigate('/weather')}
-                        className={'bg-green-600 px-7 py-3 rounded-full text-white font-bold cursor-pointer'}>Predict
+                        className={'bg-green-600 px-7 py-3 rounded-full text-white font-bold cursor-pointer'}>Give Advice
                     </button>
                 </div>
 
