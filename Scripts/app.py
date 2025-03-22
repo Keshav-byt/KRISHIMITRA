@@ -420,7 +420,7 @@ def pest_detection():
             logger.warning(f"Could not get class names: {e}")
 
         result = {
-            "confidence": round(confidence, 2)
+            "confidence": round(confidence, 7)
         }
         
         # Add class name if available
@@ -500,7 +500,6 @@ def predict_crop():
         recommendations = get_crop_recommendations(crop_type, temperature, humidity)
         
         return jsonify({
-            "city": city,
             "temperature": temperature,
             "humidity": humidity,
             "recommended_crop": crop_type
