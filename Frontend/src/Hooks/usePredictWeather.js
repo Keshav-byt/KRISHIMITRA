@@ -22,7 +22,7 @@ const usePredictWeather=()=>{
 
             }
             const data=await response.json();
-            return ` ${Math.abs(data.predicted_temperature.toFixed(2))*100} °C`
+            return ` ${data.predicted_temperature.toFixed(2)} °C`
         }
         catch (error){
             toast(error.message || 'An unexpected error occurred.')
