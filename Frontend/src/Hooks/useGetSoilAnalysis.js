@@ -33,7 +33,7 @@ const useGetSoilAnalysis=()=>{
         catch(error){
             console.error('Soil analysis error:', error);
             toast.error(''+ error)
-            return null:
+            return null;
         }
     }
     return getSoilAnalysis;
