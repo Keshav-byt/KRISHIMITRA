@@ -6,7 +6,7 @@ from tensorflow.keras.models import Model   # type: ignore
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau # type: ignore
 
 # Constants
-DATA_DIR = "data/Pest/Processed_Images"
+DATA_DIR = "Data/Pest/Processed_Images"
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 64  # Increased batch size
 EPOCHS = 30  # Increased number of epochs
