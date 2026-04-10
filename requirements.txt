@@ -4,5 +4,5 @@ scikit-learn
 tensorflow
 matplotlib
 flask
-cv2
+opencv-python
 gunicorn
