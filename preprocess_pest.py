@@ -5,7 +5,7 @@ from tqdm import tqdm
 from pathlib import Path
 
 # Constants
-INPUT_DIR = "Data/Pest/Raw_Images"
+INPUT_DIR = "Data/Pest/Processed_Images"
 OUTPUT_DIR = "Data/Pest/Processed1_Images"
 TARGET_SIZE = (224, 224)  # Target image size (width, height)
 
