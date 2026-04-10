@@ -214,7 +214,7 @@ def soil_analysis():
         confidence = abs(prediction_value - 0.5) * 200  # Scale to 0-100%
         
         # Get recommendations based on actual soil values
-        recommendations = get_soil_recommendation(data, fertility_status)
+        recommendations = get_soil_recommendation(Data, fertility_status)
         
         # Return detailed response
         return jsonify({
@@ -269,62 +269,6 @@ def get_soil_recommendation(soil_data, fertility_status):
         
     return recommendations
 
-@app.route("/weather-prediction", methods=["POST"])
-def weather_prediction():
-    """Weather prediction endpoint"""
-    try:
-        # Validate model is loaded
-        if 'weather' not in MODELS or 'weather' not in SCALERS:
-            return jsonify({"error": "Weather prediction model not loaded"}), 500
-
-        # Extract features from request
-        data = request.json
-        if not data:
-            return jsonify({"error": "No weather data provided"}), 400
-            
-        if isinstance(data, dict):  # If data is a dictionary, extract "data"
-            data = data.get("data", None)
-        
-        if not isinstance(data, list):
-            return jsonify({"error": "Invalid input format. Expected a JSON array or object with 'data' property."}), 400
-
-        # Validate the input size
-        if len(data) != 3:
-            return jsonify({"error": f"Invalid input size. Expected exactly 3 values, got {len(data)}."}), 400
-
-        # Validate numeric values
-        try:
-            data = [float(val) for val in data]
-        except (ValueError, TypeError):
-            return jsonify({"error": "All input values must be numeric"}), 400
-
-        # Convert to numpy array and reshape for the model input
-        features = np.array([data])
-        scaled_features = SCALERS['weather'].transform(features)
-        
-        # Reshape for LSTM input
-        scaled_features = scaled_features.reshape(1, 1, 3)
-        
-        # Make prediction
-        scaled_prediction = MODELS['weather'].predict(scaled_features)
-        
-        # Inverse transform prediction to the original scale
-        temp_pred = scaled_prediction[0][0]
-        dummy_features = np.zeros((1, 3))
-        dummy_features[0, 0] = temp_pred  # Set the first column (temperature) to our prediction
-        
-        # Inverse transform to get the actual temperature
-        original_scale_prediction = SCALERS['weather'].inverse_transform(dummy_features)[0, 0]
-
-        # Return the predicted temperature
-        return jsonify({
-            "predicted_temperature": round(float(original_scale_prediction), 2)
-        }), 200
-
-    except Exception as e:
-        logger.error(f"Weather prediction error: {e}")
-        logger.error(traceback.format_exc())
-        return jsonify({"error": f"Internal server error during weather prediction: {str(e)}"}), 500
     
 @app.route("/pest-detection", methods=["POST"])
 def pest_detection():
@@ -364,9 +308,9 @@ def pest_detection():
         # Get class names (if available)
         class_names = []
         try:
-            data_dir = os.path.join(project_root, "data", "Pest", "Processed_Images")
-            if os.path.exists(data_dir):
-                class_names = sorted([d for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))])
+            data_dir = os.path.join(project_root, "Data", "Pest", "Processed_Images")
+            if os.path.exists(Data_dir):
+                class_names = sorted([D for D in os.listdir(Data_dir) if os.path.isdir(os.path.join(Data_dir, D))])
         except Exception as e:
             logger.warning(f"Could not get class names: {e}")
 
@@ -406,8 +350,8 @@ def predict_crop():
         if missing:
             return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
         
-        soil_color = data.get("soil_color")
-        city = data.get("city")
+        soil_color = Data.get("soil_color")
+        city = Data.get("city")
         
         # Validate soil_color is in known classes
         if 'soil_colour_enc' not in MODELS:
