@@ -12,7 +12,7 @@ def preprocess_data(input_file):
     df['Soil Colour Encoded'] = soil_color_enc.fit_transform(df['Soil Colour'])
     
     # Save encoders for later use
-    joblib.dump(soil_color_enc, 'models/Irrigation_Advice/soil_color_encoder.pkl')
+    joblib.dump(soil_color_enc, 'Models/Irrigation_Advice/soil_color_encoder.pkl')
     
     # Select features and target
     X = df[['Soil Colour Encoded', 'Temperature', 'Air Humidity']]
@@ -23,14 +23,14 @@ def preprocess_data(input_file):
     y_encoded = crop_encoder.fit_transform(y)
     
     # Save the crop encoder for inference
-    joblib.dump(crop_encoder, 'models/Irrigation_Advice/crop_encoder.pkl')
+    joblib.dump(crop_encoder, 'Models/Irrigation_Advice/crop_encoder.pkl')
     
     # Normalize features
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     
     # Save the scaler for inference
-    joblib.dump(scaler, 'models/Irrigation_advice/scaler.pkl')
+    joblib.dump(scaler, 'Models/Irrigation_advice/scaler.pkl')
     
     # Split dataset
     X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.2, random_state=42)
