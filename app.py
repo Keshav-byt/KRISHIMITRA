@@ -38,9 +38,7 @@ PEST_MODEL = None
 LABEL_ENC = None
 API_KEY = "38951a8de7c22843f1f124e445f7b55c" # OpenWeatherMap API key
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-scripts_dir = current_dir
-project_root = os.path.dirname(current_dir) 
+project_root = project_root = os.path.dirname(os.path.abspath(__file__))
 
 # Standardize paths
 PATHS = {
