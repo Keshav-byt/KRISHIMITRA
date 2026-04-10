@@ -154,54 +154,43 @@ MODELS, SCALERS = load_models_and_scalers()
 
 @app.route("/soil-analysis", methods=["POST"])
 def soil_analysis():
-    """Soil fertility analysis endpoint"""
     try:
-        # Validate model is loaded
+        logger.info("=== REQUEST RECEIVED ===")
+
         if 'soil' not in MODELS or 'soil' not in SCALERS:
+            logger.error("Model or scaler missing")
             return jsonify({"error": "Soil analysis model not loaded"}), 500
 
-        # Extract features from request
-        data = request.json
+        data = request.get_json()
+        logger.info(f"Input data: {data}")
+
         if not data:
             return jsonify({"error": "No soil data provided"}), 400
 
-        # Required feature names
         feature_names = ["N", "P", "K", "pH", "EC", "OC", "S", "Zn", "Fe", "Cu", "Mn", "B"]
-        
-        # Validate input features
-        missing = [f for f in feature_names if f not in data]
-        if missing:
-            return jsonify({"error": f"Missing required soil features: {', '.join(missing)}"}), 400
 
-        # Validate numeric values
-        for feature in feature_names:
-            try:
-                value = float(data[feature])
-                data[feature] = value  # Ensure numeric conversion
-            except (ValueError, TypeError):
-                return jsonify({"error": f"Invalid value for {feature}: must be numeric"}), 400
+        for f in feature_names:
+            data[f] = float(data[f])
 
-        # Prepare features
-        features = [data[feature] for feature in feature_names]
+        features = [data[f] for f in feature_names]
+        logger.info(f"Features list: {features}")
+
         features_array = np.array([features])
+        logger.info(f"Features shape: {features_array.shape}")
 
-        # Scale features
         scaled_features = SCALERS['soil'].transform(features_array)
+        logger.info(f"Scaled features: {scaled_features}")
 
-        # Make prediction
         prediction = MODELS['soil'].predict(scaled_features)
-        
-        # Convert prediction to interpretable result
+        logger.info(f"Raw prediction: {prediction}")
+
         prediction_value = float(prediction[0]) if len(prediction.shape) == 1 else float(prediction[0][0])
+
         fertility_status = "High" if prediction_value > 0.5 else "Low"
-        
-        # Calculate confidence
-        confidence = abs(prediction_value - 0.5) * 200  # Scale to 0-100%
-        
-        # Get recommendations based on actual soil values
+        confidence = abs(prediction_value - 0.5) * 200
+
         recommendations = get_soil_recommendation(data, fertility_status)
-        
-        # Return detailed response
+
         return jsonify({
             "fertility_status": fertility_status,
             "confidence": round(confidence, 2),
@@ -209,9 +198,9 @@ def soil_analysis():
         }), 200
 
     except Exception as e:
-        logger.error(f"Soil analysis error: {e}")
+        logger.error(f"❌ CRASH: {e}")
         logger.error(traceback.format_exc())
-        return jsonify({"error": f"Internal server error during soil analysis: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
 def get_soil_recommendation(soil_data, fertility_status):
     """Generate soil fertility recommendations based on soil data"""
