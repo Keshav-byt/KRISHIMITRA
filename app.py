@@ -199,7 +199,7 @@ def soil_analysis():
         confidence = abs(prediction_value - 0.5) * 200  # Scale to 0-100%
         
         # Get recommendations based on actual soil values
-        recommendations = get_soil_recommendation(Data, fertility_status)
+        recommendations = get_soil_recommendation(data, fertility_status)
         
         # Return detailed response
         return jsonify({
