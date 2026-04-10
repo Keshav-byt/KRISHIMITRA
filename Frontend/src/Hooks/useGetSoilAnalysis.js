@@ -1,7 +1,7 @@
 import {toast} from 'react-hot-toast'
 
 const useGetSoilAnalysis=()=>{
-    const API_BASE_URL = 'http://localhost:5000';
+    const API_BASE_URL = 'https://krishimitra-3h2o.onrender.com';
     const getSoilAnalysis = async (mineralValue) => {
         try{
             const response=await fetch (`${API_BASE_URL}/soil-analysis`,{
