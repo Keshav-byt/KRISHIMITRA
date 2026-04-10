@@ -20,18 +20,6 @@ const Navbar=()=>{
                     </h1>
                 </div>
                 <div className="group ">
-                    <h1 onClick={() => navigate('/weather')}
-                        className={'text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out group-hover:text-green-500 shadow'}>
-                        Irrigation Advice
-                    </h1>
-                </div>
-                <div className="group ">
-                    <h1 onClick={() => navigate('/pest')}
-                        className={'text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out group-hover:text-green-500 shadow'}>
-                        Pest Detection
-                    </h1>
-                </div>
-                <div className="group ">
                     <h1 onClick={() => navigate('/govt-schemes')}
                         className={'text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out group-hover:text-green-500 shadow'}>
                         Govt. Schemes
