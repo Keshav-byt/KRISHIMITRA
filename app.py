@@ -36,7 +36,6 @@ MODELS = {}
 SCALERS = {}
 PEST_MODEL = None
 LABEL_ENC = None
-API_KEY = "38951a8de7c22843f1f124e445f7b55c" # OpenWeatherMap API key
 
 project_root = project_root = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,8 +43,6 @@ project_root = project_root = os.path.dirname(os.path.abspath(__file__))
 PATHS = {
     'soil_model': os.path.join(project_root, "Models", "Soil_Analysis", "soil_tabular_model.h5"),
     'soil_scaler': os.path.join(project_root, "Models", "Soil_Analysis", "scaler.pkl"),
-    'weather_model': os.path.join(project_root, "Models", "Weather_Forecast", "weather_model.h5"),
-    'weather_scaler': os.path.join(project_root, "Models", "Weather_Forecast", "scaler.pkl"),
     'pest_model': os.path.join(project_root, "Models", "Pest_Detection", "pest_detection_model.h5"),
     'irrigation_model': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_recommend.pkl"),
     'irrigation_scaler': os.path.join(project_root, "Models", "Irrigation_Advice", "scaler.pkl"),
@@ -54,7 +51,6 @@ PATHS = {
     'preprocess_soil': os.path.join(project_root, "preprocess_soil.py"),
     'preprocess_irrigation': os.path.join(project_root, "preprocess_irrigation.py"),
     'train_soil': os.path.join(project_root, "Models", "Soil_Analysis", "train_soil_model.py"),
-    'train_weather': os.path.join(project_root, "Models", "Weather_Forecast", "train_weather_model.py"),
     'train_pest': os.path.join(project_root, "Models", "Pest_Detection", "train_pest_model.py"),
     'train_irrigation': os.path.join(project_root, "Models", "Irrigation_Advice", "train_irrigation_model.py"),
 }
@@ -65,23 +61,6 @@ def ensure_directory_exists(file_path):
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
         logger.info(f"Created directory: {directory}")
-
-def get_weather(city):
-    """Get weather data for a city using OpenWeatherMap API."""
-    try:
-        URL = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
-        response = requests.get(URL)
-        if response.status_code == 200:
-            data = response.json()
-            temperature = data["main"]["temp"]
-            humidity = data["main"]["humidity"]
-            return temperature, humidity
-        else:
-            logger.error(f"Weather API error: {response.status_code} - {response.text}")
-            return None, None
-    except Exception as e:
-        logger.error(f"Weather API request failed: {e}")
-        return None, None
 
 # Load models and scalers
 def load_models_and_scalers():
@@ -96,7 +75,7 @@ def load_models_and_scalers():
     # Run models again, if necessary
     # Soil preprocessing
     if (not os.path.exists(PATHS['soil_scaler']) or 
-        not os.path.exists(os.path.join(project_root, "data", "soil", "X_train_scaled.csv"))):
+        not os.path.exists(os.path.join(project_root, "Data", "Soil", "X_train_scaled.csv"))):
         logger.info("Processing Soil Data...")
         preprocess = import_module_from_file(PATHS['preprocess_soil'], "preprocess")
         if preprocess:
