@@ -4,7 +4,6 @@ from sklearn.metrics import accuracy_score
 import joblib
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../scripts')))
 
 from preprocess_irrigation import preprocess_data #type: ignore
 
@@ -24,9 +23,9 @@ def train_model(data_file):
     print(f"Model Accuracy: {accuracy * 100:.2f}%")
     
     # Save trained model
-    joblib.dump(model, 'models/irrigation_advice/crop_recommend.pkl')
+    joblib.dump(model, 'Models/Irrigation_Advice/crop_recommend.pkl')
     
     return model
 
 if __name__ == "__main__":
-    train_model("data/Irrigation/Irrigation_Dataset.csv")
+    train_model("Data/Irrigation/Irrigation_Dataset.csv")
