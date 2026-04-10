@@ -29,7 +29,7 @@ def import_module_from_file(file_path, module_name):
 
 # Create Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Global variables
 MODELS = {}
