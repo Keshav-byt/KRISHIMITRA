@@ -192,7 +192,7 @@ def soil_analysis():
         prediction = MODELS['soil'].predict(scaled_features)
         
         # Convert prediction to interpretable result
-        prediction_value = float(prediction[0][0])
+        prediction_value = float(prediction[0]) if len(prediction.shape) == 1 else float(prediction[0][0])
         fertility_status = "High" if prediction_value > 0.5 else "Low"
         
         # Calculate confidence
