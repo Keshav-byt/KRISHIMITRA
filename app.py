@@ -41,20 +41,19 @@ project_root = project_root = os.path.dirname(os.path.abspath(__file__))
 
 # Standardize paths
 PATHS = {
-    'soil_model': os.path.join(project_root, "Models", "Soil_Analysis", "soil_tabular_model.h5"),
-    'soil_scaler': os.path.join(project_root, "Models", "Soil_Analysis", "scaler.pkl"),
-    'pest_model': os.path.join(project_root, "Models", "Pest_Detection", "pest_detection_model.h5"),
-    'irrigation_model': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_recommend.pkl"),
-    'irrigation_scaler': os.path.join(project_root, "Models", "Irrigation_Advice", "scaler.pkl"),
-    'crop_type_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_encoder.pkl"),
-    'soil_colour_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "soil_color_encoder.pkl"),
-    'preprocess_soil': os.path.join(project_root, "preprocess_soil.py"),
-    'preprocess_irrigation': os.path.join(project_root, "preprocess_irrigation.py"),
-    'train_soil': os.path.join(project_root, "Models", "Soil_Analysis", "train_soil_model.py"),
-    'train_pest': os.path.join(project_root, "Models", "Pest_Detection", "train_pest_model.py"),
-    'train_irrigation': os.path.join(project_root, "Models", "Irrigation_Advice", "train_irrigation_model.py"),
+  'soil_model': os.path.join(project_root, "Models", "Soil_Analysis", "soil_tabular_model.h5"),
+  'soil_scaler': os.path.join(project_root, "Models", "Soil_Analysis", "scaler.pkl"),
+  'pest_model': os.path.join(project_root, "Models", "Pest_Detection", "pest_detection_model.h5"),
+  'irrigation_model': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_recommend.pkl"),
+  'irrigation_scaler': os.path.join(project_root, "Models", "Irrigation_Advice", "scaler.pkl"),
+  'crop_type_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_encoder.pkl"),
+  'soil_colour_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "soil_color_encoder.pkl"),
+  'preprocess_soil': os.path.join(project_root, "preprocess_soil.py"),
+  'preprocess_irrigation': os.path.join(project_root, "preprocess_irrigation.py"),
+  'train_soil': os.path.join(project_root, "Models", "Soil_Analysis", "train_soil_model.py"),
+  'train_pest': os.path.join(project_root, "Models", "Pest_Detection", "train_pest_model.py"),
+  'train_irrigation': os.path.join(project_root, "Models", "Irrigation_Advice", "train_irrigation_model.py"),
 }
-
 def ensure_directory_exists(file_path):
     """Ensure the directory for a file exists."""
     directory = os.path.dirname(file_path)
@@ -309,8 +308,8 @@ def pest_detection():
         class_names = []
         try:
             data_dir = os.path.join(project_root, "Data", "Pest", "Processed_Images")
-            if os.path.exists(Data_dir):
-                class_names = sorted([D for D in os.listdir(Data_dir) if os.path.isdir(os.path.join(Data_dir, D))])
+            if os.path.exists(data_dir):
+              class_names = sorted([d for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))])
         except Exception as e:
             logger.warning(f"Could not get class names: {e}")
 
@@ -350,8 +349,8 @@ def predict_crop():
         if missing:
             return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
         
-        soil_color = Data.get("soil_color")
-        city = Data.get("city")
+        soil_color = data.get("soil_color")
+        city = data.get("city")
         
         # Validate soil_color is in known classes
         if 'soil_colour_enc' not in MODELS:
