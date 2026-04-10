@@ -178,13 +178,21 @@ def soil_analysis():
         features_array = np.array([features])
         logger.info(f"Features shape: {features_array.shape}")
 
-        scaled_features = SCALERS['soil'].transform(features_array)
+        try:
+            scaled_features = SCALERS['soil'].transform(features_array)
+        except Exception as e:
+            logger.error(f"Scaler error: {e}")
+            return jsonify({"error": f"Scaler failed: {str(e)}"}), 500
         logger.info(f"Scaled features: {scaled_features}")
 
-        prediction = MODELS['soil'].predict(scaled_features)
+        try:
+            prediction = MODELS['soil'].predict(scaled_features)
+        except Exception as e:
+            logger.error(f"Model prediction error: {e}")
+            return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
         logger.info(f"Raw prediction: {prediction}")
 
-        prediction_value = float(prediction[0]) if len(prediction.shape) == 1 else float(prediction[0][0])
+        prediction_value = float(np.squeeze(prediction))
 
         fertility_status = "High" if prediction_value > 0.5 else "Low"
         confidence = abs(prediction_value - 0.5) * 200
