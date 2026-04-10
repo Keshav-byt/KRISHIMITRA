@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 import joblib  # For saving and loading scaler objects
 
 # Load dataset
-csv_path = "data/soil/soil_data.csv"
+csv_path = "Data/Soil/soil_data.csv"
 data = pd.read_csv(csv_path)
 
 # Separate features and target
