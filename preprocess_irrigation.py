@@ -38,4 +38,4 @@ def preprocess_data(input_file):
     return X_train, X_test, y_train, y_test
 
 if __name__ == "__main__":
-    preprocess_data("data/Irrigation/Irrigation_Dataset.csv")
+    preprocess_data("Data/Irrigation/Irrigation_Dataset.csv")
