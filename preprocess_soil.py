@@ -20,8 +20,8 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 # Save preprocessed data and scaler
-pd.DataFrame(X_train_scaled, columns=X.columns).to_csv("data/soil/X_train_scaled.csv", index=False)
-pd.DataFrame(X_test_scaled, columns=X.columns).to_csv("data/soil/X_test_scaled.csv", index=False)
-pd.DataFrame(y_train).to_csv("data/soil/y_train.csv", index=False)
-pd.DataFrame(y_test).to_csv("data/soil/y_test.csv", index=False)
-joblib.dump(scaler, "models/soil_analysis/scaler.pkl")
+pd.DataFrame(X_train_scaled, columns=X.columns).to_csv("Data/Soil/X_train_scaled.csv", index=False)
+pd.DataFrame(X_test_scaled, columns=X.columns).to_csv("Data/Soil/X_test_scaled.csv", index=False)
+pd.DataFrame(y_train).to_csv("Data/Soil/y_train.csv", index=False)
+pd.DataFrame(y_test).to_csv("Data/Soil/y_test.csv", index=False)
+joblib.dump(scaler, "Models/Soil_Analysis/scaler.pkl")
