@@ -43,7 +43,6 @@ project_root = project_root = os.path.dirname(os.path.abspath(__file__))
 PATHS = {
   'soil_model': os.path.join(project_root, "Models", "Soil_Analysis", "soil_tabular_model.h5"),
   'soil_scaler': os.path.join(project_root, "Models", "Soil_Analysis", "scaler.pkl"),
-  'pest_model': os.path.join(project_root, "Models", "Pest_Detection", "pest_detection_model.h5"),
   'irrigation_model': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_recommend.pkl"),
   'irrigation_scaler': os.path.join(project_root, "Models", "Irrigation_Advice", "scaler.pkl"),
   'crop_type_enc': os.path.join(project_root, "Models", "Irrigation_Advice", "crop_encoder.pkl"),
@@ -51,7 +50,6 @@ PATHS = {
   'preprocess_soil': os.path.join(project_root, "preprocess_soil.py"),
   'preprocess_irrigation': os.path.join(project_root, "preprocess_irrigation.py"),
   'train_soil': os.path.join(project_root, "Models", "Soil_Analysis", "train_soil_model.py"),
-  'train_pest': os.path.join(project_root, "Models", "Pest_Detection", "train_pest_model.py"),
   'train_irrigation': os.path.join(project_root, "Models", "Irrigation_Advice", "train_irrigation_model.py"),
 }
 def ensure_directory_exists(file_path):
@@ -63,7 +61,7 @@ def ensure_directory_exists(file_path):
 
 # Load models and scalers
 def load_models_and_scalers():
-    global PEST_MODEL, LABEL_ENC
+    global LABEL_ENC
     models = {}
     scalers = {}
 
@@ -94,12 +92,6 @@ def load_models_and_scalers():
         train_soil = import_module_from_file(PATHS['train_soil'], "train_soil")
         if train_soil:
             logger.info("Soil model training completed")
-        
-    if not os.path.exists(PATHS['pest_model']):
-        logger.info("Training pest detection model...")
-        train_pest = import_module_from_file(PATHS['train_pest'], "train_pest")
-        if train_pest:
-            logger.info("Pest detection model training completed")
 
     if not os.path.exists(PATHS['irrigation_model']) or not os.path.exists(PATHS['irrigation_scaler']):
         logger.info("Training irrigation advice model...")
@@ -122,12 +114,6 @@ def load_models_and_scalers():
         else:
             logger.error(f"Soil scaler not found at {PATHS['soil_scaler']}")
 
-        # Load Pest Detection Model
-        if os.path.exists(PATHS['pest_model']):
-            PEST_MODEL = load_model(PATHS['pest_model'])
-            logger.info("Pest detection model loaded successfully")
-        else:
-            logger.error(f"Pest detection model not found at {PATHS['pest_model']}")
 
         # Load Irrigation Advice Model
         if os.path.exists(PATHS['irrigation_model']):
@@ -268,67 +254,7 @@ def get_soil_recommendation(soil_data, fertility_status):
         
     return recommendations
 
-    
-@app.route("/pest-detection", methods=["POST"])
-def pest_detection():
-    """Pest detection endpoint"""
-    try:
-        # Check if the pest model is loaded
-        if PEST_MODEL is None:
-            return jsonify({"error": "Pest detection model not loaded"}), 500
-
-        # Check if an image was uploaded
-        if 'image' not in request.files:
-            return jsonify({"error": "No image provided"}), 400
-
-        image_file = request.files['image']
-        
-        # Validate file type
-        if not image_file.filename or '.' not in image_file.filename:
-            return jsonify({"error": "Invalid image file"}), 400
-            
-        extension = image_file.filename.rsplit('.', 1)[1].lower()
-        if extension not in {'png', 'jpg', 'jpeg', 'gif'}:
-            return jsonify({"error": "File extension not allowed"}), 400
-
-        try:
-            image = Image.open(io.BytesIO(image_file.read())).convert('RGB')
-            image = image.resize((224, 224))  # Resize to match model input size
-            image_array = np.array(image) / 255.0  # Normalize
-            image_array = np.expand_dims(image_array, axis=0)  # Add batch dimension
-        except Exception as e:
-            return jsonify({"error": f"Failed to process image: {str(e)}"}), 400
-
-        # Predict using model
-        prediction = PEST_MODEL.predict(image_array)
-        predicted_class = np.argmax(prediction, axis=1)[0]
-        confidence = float(np.max(prediction) * 100)
-
-        # Get class names (if available)
-        class_names = []
-        try:
-            data_dir = os.path.join(project_root, "Data", "Pest", "Processed_Images")
-            if os.path.exists(data_dir):
-              class_names = sorted([d for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))])
-        except Exception as e:
-            logger.warning(f"Could not get class names: {e}")
-
-        result = {
-            "confidence": round(confidence, 7)
-        }
-        
-        # Add class name if available
-        if class_names and predicted_class < len(class_names):
-            result["class_name"] = class_names[predicted_class]
-        else:
-            result["class_id"] = int(predicted_class)
-
-        return jsonify(result), 200
-
-    except Exception as e:
-        logger.error(f"Pest detection error: {e}")
-        logger.error(traceback.format_exc())
-        return jsonify({"error": f"Internal server error during pest detection: {str(e)}"}), 500
+  
     
 @app.route("/predict-crop", methods=["POST"])
 def predict_crop():
