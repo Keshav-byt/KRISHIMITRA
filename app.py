@@ -95,12 +95,6 @@ def load_models_and_scalers():
         train_soil = import_module_from_file(PATHS['train_soil'], "train_soil")
         if train_soil:
             logger.info("Soil model training completed")
-    
-    if not os.path.exists(PATHS['weather_model']) or not os.path.exists(PATHS['weather_scaler']):
-        logger.info("Training weather model...")
-        train_weather = import_module_from_file(PATHS['train_weather'], "train_weather")
-        if train_weather:
-            logger.info("Weather model training completed")
         
     if not os.path.exists(PATHS['pest_model']):
         logger.info("Training pest detection model...")
@@ -129,26 +123,6 @@ def load_models_and_scalers():
         else:
             logger.error(f"Soil scaler not found at {PATHS['soil_scaler']}")
 
-        # Load Weather Forecast Model
-        if os.path.exists(PATHS['weather_model']):
-            models['weather'] = load_model(
-                PATHS['weather_model'], 
-                custom_objects={
-                    "mse": MeanSquaredError(),
-                    "mae": MeanAbsoluteError()
-                }
-            )
-            logger.info("Weather model loaded successfully")
-        else:
-            logger.error(f"Weather model not found at {PATHS['weather_model']}")
-
-        # Load Weather Scaler
-        if os.path.exists(PATHS['weather_scaler']):
-            scalers['weather'] = joblib.load(PATHS['weather_scaler'])
-            logger.info("Weather scaler loaded successfully")
-        else:
-            logger.error(f"Weather scaler not found at {PATHS['weather_scaler']}")
-            
         # Load Pest Detection Model
         if os.path.exists(PATHS['pest_model']):
             PEST_MODEL = load_model(PATHS['pest_model'])
