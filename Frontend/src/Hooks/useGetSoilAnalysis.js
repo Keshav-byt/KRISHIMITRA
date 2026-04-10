@@ -14,7 +14,7 @@ const useGetSoilAnalysis=()=>{
             if (!response.ok) {
                 const errorData = await response.json();
                 const errorMessage=errorData.error || 'Soil analysis failed. Please try again.'
-                // toast.error(errorMessage)
+                toast.error(errorMessage)
                 throw new Error(errorMessage);
             }
             const data=await response.json();
@@ -33,6 +33,7 @@ const useGetSoilAnalysis=()=>{
         catch(error){
             console.error('Soil analysis error:', error);
             toast.error(''+ error)
+            return null:
         }
     }
     return getSoilAnalysis;
